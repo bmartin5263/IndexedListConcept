@@ -4,8 +4,8 @@ import java.util.Map;
 public class IndexedList {
 
     // In practice, this would have to be written from scratch, but we're the designers, so thats a problem for the
-    // dev team. 
-    private HashMap<String, IndexNodePair> index;
+    // dev team.
+    private Index index;
 
     private Node head;
     private Node tail;
@@ -15,7 +15,7 @@ public class IndexedList {
     {
         this.head = null;
         this.tail = null;
-        this.index = new HashMap<>();
+        this.index = new Index();
         this.size = 0;
     }
 
@@ -48,7 +48,7 @@ public class IndexedList {
             newNode.prev = tail;
             tail = newNode;
         }
-        index.put(key, new IndexNodePair(size, newNode));
+        index.put(key, new NodeIndexPair(size, newNode));
         ++size;
     }
 
@@ -71,11 +71,8 @@ public class IndexedList {
             newNode.next = head;
             head = newNode;
         }
-        for (IndexNodePair pair : index.values())
-        {
-            pair.index++;
-        }
-        index.put(key, new IndexNodePair(0, newNode));
+        index.updateIndices(0, size, 1);
+        index.put(key, new NodeIndexPair(0, newNode));
         ++size;
     }
 
@@ -143,14 +140,8 @@ public class IndexedList {
                 oldNext.prev = newNode;
             }
             // Update the index, very important
-            for (IndexNodePair pair : index.values())
-            {
-                if (pair.index >= position)
-                {
-                    pair.index++;
-                }
-            }
-            index.put(key, new IndexNodePair(position, newNode));
+            index.updateIndices(position, position, size);
+            index.put(key, new NodeIndexPair(position, newNode));
             ++size;
         }
     }
@@ -189,10 +180,7 @@ public class IndexedList {
             head.prev = null;
         }
         index.remove(key);
-        for (IndexNodePair pair : index.values())
-        {
-            pair.index--;
-        }
+        index.updateIndices(0, size, -1);
         size--;
     }
 
@@ -247,13 +235,7 @@ public class IndexedList {
                  */
                 Node n = null;
                 String key = n.data;
-                for (IndexNodePair pair : index.values())
-                {
-                    if (pair.index >= position)
-                    {
-                        pair.index++;
-                    }
-                }
+                index.updateIndices(position, size, -1);
                 index.remove(key);
                 size--;
             }

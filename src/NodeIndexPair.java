@@ -1,9 +1,9 @@
-public class IndexNodePair {
+public class NodeIndexPair {
 
     public int index;
     public Node node;
 
-    public IndexNodePair(int index, Node node)
+    public NodeIndexPair(int index, Node node)
     {
         this.index = index;
         this.node = node;
